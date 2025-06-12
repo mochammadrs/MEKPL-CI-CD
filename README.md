@@ -3,14 +3,12 @@
 
 Dengan tema aplikasi perpustakaan.
 
-## Features
+## Task
 
-- Automata 
-- Table-driven construction 
-- Parameterization/generics 
-- Runtime configuration 
-- Code reuse/library 
-- API 
+- Continuous Integration: Muhammad Ghaziveda Belvanaufal
+- Continuous Testing: Muhammad Daffa Fadillah
+- Continuous Inspection: Mochammad Rizky Septian
+- Continuous Deployment/Delivery: Muhammad Fauzan Majid
 
 ## Contributing
 
