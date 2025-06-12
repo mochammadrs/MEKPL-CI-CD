@@ -22,13 +22,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0  # Crucial for SonarCloud
+          fetch-depth: 0
 
       - name: Clear GitHub Actions cache for SonarCloud
         shell: powershell
         run: |
-          rm -rf ~\.sonar\cache
-          rm -rf .\.sonar\scanner
+          Remove-Item -Path ~\.sonar\cache -Recurse -Force -ErrorAction SilentlyContinue
+          Remove-Item -Path .\.sonar\scanner -Recurse -Force -ErrorAction SilentlyContinue
 
       - name: Install SonarCloud scanner
         shell: powershell
