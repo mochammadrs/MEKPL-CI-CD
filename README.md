@@ -1,5 +1,5 @@
 
-# Tugas Besar Mata Kuliah Konstruksi Perangkat Lunak
+# Tugas Besar Mata Kuliah Manajemen Evolusi dan Perangkat Lunak
 
 Dengan tema aplikasi perpustakaan.
 
@@ -14,12 +14,9 @@ Dengan tema aplikasi perpustakaan.
 
 ## Contributing
 
-Kelompok 05 KPL
+Kelompok Mendokusoi
 
-- Muhammad Rafif AryaSatya Purnomo 1302220003
-- Muhammad Ghaziveda Belvanaufal 1302220011
-- Daffa Adrianto Effendi 1302220151
-- Muhammad Ghiyats Fatiha 1302220109
-- Reihan Ramdhana Anwari   1302220048 
 - Mochammad Rizky Septian 1302220121
-- Muhammad Zidan Siva Fajar 1302223039
+- Muhammad Ghaziveda Belvanaufal 1302220011
+- Muhammad Fauzan Majid 1302220144
+- Muhammad Daffa Fadillah 1302223124
