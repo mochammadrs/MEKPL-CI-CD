@@ -1,40 +1,58 @@
-name: SonarCloud
+name: Build and analyze
 
 on:
   push:
     branches:
-      - main
+      - main # Ganti sesuai nama branch utama Anda
   pull_request:
     types: [opened, synchronize, reopened]
 
 jobs:
   build:
-    name: Build and analyze
-    runs-on: ubuntu-latest
+    name: Build and Analyze
+    runs-on: windows-latest # <-- KEMBALI KE WINDOWS
 
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
         with:
-          dotnet-version: '8.0.x'
+          java-version: 17
+          distribution: 'zulu'
 
-      - name: Restore dependencies
-        run: dotnet restore TUBES_KPL_KELOMPOK-05.sln
-
-      - name: Build
-        run: dotnet build TUBES_KPL_KELOMPOK-05.sln --no-restore --configuration Release
-
-      # Optional: Jalankan unit test kalau ada
-      # - name: Test
-      #   run: dotnet test TUBES_KPL_KELOMPOK-05.sln --no-build --verbosity normal
-
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@v2
+      - uses: actions/checkout@v3
         with:
-          projectBaseDir: .
+          fetch-depth: 0
+
+      - name: Cache SonarCloud packages
+        uses: actions/cache@v3
+        with:
+          path: ~\.sonar\cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+
+      - name: Cache SonarCloud scanner
+        id: cache-sonar-scanner
+        uses: actions/cache@v3
+        with:
+          path: .\.sonar\scanner
+          key: ${{ runner.os }}-sonar-scanner
+          restore-keys: ${{ runner.os }}-sonar-scanner
+
+      - name: Install SonarCloud scanner
+        if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
+        shell: powershell
+        run: |
+          New-Item -Path .\.sonar\scanner -ItemType Directory
+          dotnet tool update dotnet-sonarscanner --tool-path .\.sonar\scanner
+
+      - name: Build and analyze
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_PROJECT_KEY: mochammadrs_MEKPL-CI-CD
-          SONAR_ORGANIZATION: mochammadrs
+        shell: powershell
+        run: |
+          .\.sonar\scanner\dotnet-sonarscanner begin /k:"mochammadrs_MEKPL-CI-CD" /o:"mochammadrs" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https.sonarcloud.io"
+          
+          dotnet build --no-incremental
+          
+          .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
