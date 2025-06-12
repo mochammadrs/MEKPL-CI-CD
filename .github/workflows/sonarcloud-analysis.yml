@@ -51,7 +51,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         shell: powershell
         run: |
-          .\.sonar\scanner\dotnet-sonarscanner begin /k:"mochammadrs_MEKPL-CI-CD" /o:"mochammadrs" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https.sonarcloud.io"/d:sonar.verbose=true
+          .\.sonar\scanner\dotnet-sonarscanner begin /k:"mochammadrs_MEKPL-CI-CD" /o:"mochammadrs" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https.sonarcloud.io" /d:sonar.verbose=true
           
           dotnet build --no-incremental
           
