@@ -1,0 +1,40 @@
+name: SonarCloud
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  build:
+    name: Build and analyze
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore TUBES_KPL_KELOMPOK-05.sln
+
+      - name: Build
+        run: dotnet build TUBES_KPL_KELOMPOK-05.sln --no-restore --configuration Release
+
+      # Optional: Jalankan unit test kalau ada
+      # - name: Test
+      #   run: dotnet test TUBES_KPL_KELOMPOK-05.sln --no-build --verbosity normal
+
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@v2
+        with:
+          projectBaseDir: .
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_PROJECT_KEY: mochammadrs_MEKPL-CI-CD
+          SONAR_ORGANIZATION: mochammadrs
