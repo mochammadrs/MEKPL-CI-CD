@@ -3,7 +3,7 @@ name: Build and analyze
 on:
   push:
     branches:
-      - main # Ganti sesuai nama branch utama Anda
+      - main
   pull_request:
     types: [opened, synchronize, reopened]
 
