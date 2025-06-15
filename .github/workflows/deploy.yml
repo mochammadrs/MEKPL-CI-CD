@@ -42,7 +42,7 @@ jobs:
     - name: Create and Push Git Tag
       shell: pwsh
       env:
-        NEW_TAG: ${{ env.NEW_TAG }}
+        NEW_TAG: v1.0.${{ github.run_number }}
         PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
       run: |
         git config user.name "github-actions"
