@@ -1,0 +1,45 @@
+name: CD - Build and Deploy GUI App
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build-deploy:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Restore Dependencies
+      run: dotnet restore TUBES_KPL_KELOMPOK-05.sln
+
+    - name: Build Project
+      run: dotnet build TUBES_KPL_KELOMPOK-05.sln --configuration Release
+
+    - name: Publish Application
+      run: dotnet publish GUI_TUBES_KPL_KELOMPOK-5/GUI_TUBES_KPL_KELOMPOK-5.csproj --configuration Release --output publish/
+
+    - name: List published files
+      run: dir publish
+
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: MyApp-Publish
+        path: publish/
+
+    - name: Create GitHub Release
+      if: startsWith(github.ref, 'refs/tags/')
+      uses: softprops/action-gh-release@v2
+      with:
+        files: publish/**
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
