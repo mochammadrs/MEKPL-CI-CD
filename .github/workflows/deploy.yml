@@ -1,17 +1,19 @@
-name: CD - Build and Deploy GUI App
+name: Auto Build, Tag, and Release GUI App
 
 on:
   push:
-    tags:
-      - 'v*'
+    branches:
+      - main
 
 jobs:
-  build-deploy:
+  build-tag-release:
     runs-on: windows-latest
 
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # penting agar bisa membaca semua tag
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
@@ -27,19 +29,46 @@ jobs:
     - name: Publish Application
       run: dotnet publish GUI_TUBES_KPL_KELOMPOK-5/GUI_TUBES_KPL_KELOMPOK-5.csproj --configuration Release --output publish/
 
-    - name: List published files
+    - name: List Published Files
       run: dir publish
 
-    - name: Upload Artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: MyApp-Publish
-        path: publish/
+    # ====== Generate New Tag ======
+    - name: Generate Next Version Tag
+      id: tagger
+      shell: bash
+      run: |
+        git fetch --tags
+        LAST_TAG=$(git tag --sort=-v:refname | head -n 1)
+        echo "Latest tag: $LAST_TAG"
 
+        if [[ -z "$LAST_TAG" ]]; then
+          NEW_TAG="v1.0.0"
+        else
+          VERSION=${LAST_TAG#v}
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$VERSION"
+          PATCH=$((PATCH + 1))
+          NEW_TAG="v$MAJOR.$MINOR.$PATCH"
+        fi
+
+        echo "NEW_TAG=$NEW_TAG" >> $GITHUB_ENV
+        echo "Generated tag: $NEW_TAG"
+
+    # ====== Commit and Push Tag ======
+    - name: Push New Tag to Repo
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        git config user.name "github-actions"
+        git config user.email "github-actions@github.com"
+        git tag $NEW_TAG
+        git push origin $NEW_TAG
+
+    # ====== Create GitHub Release ======
     - name: Create GitHub Release
-      if: startsWith(github.ref, 'refs/tags/')
       uses: softprops/action-gh-release@v2
       with:
+        tag_name: ${{ env.NEW_TAG }}
+        name: Release ${{ env.NEW_TAG }}
         files: publish/**
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
