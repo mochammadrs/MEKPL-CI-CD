@@ -1,0 +1,29 @@
+name: .NET CI - Run Tests
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x' # Ganti sesuai versi yang kamu pakai (bisa juga 6.0.x atau 7.0.x)
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build project
+      run: dotnet build --no-restore
+
+    - name: Run unit tests
+      run: dotnet test --no-build --verbosity normal
