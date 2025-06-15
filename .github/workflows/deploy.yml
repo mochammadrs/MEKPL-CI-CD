@@ -10,7 +10,7 @@ jobs:
     runs-on: windows-latest
 
     env:
-      NEW_TAG: v1.0.1  # Ganti sesuai versi yang diinginkan
+      NEW_TAG: v1.0.${{ github.run_number }}
 
     steps:
     - name: Checkout Repository
